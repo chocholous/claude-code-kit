@@ -51,8 +51,32 @@ Before creating the PR, verify:
 - [ ] No TODO/FIXME/placeholder/mock in new code
 - [ ] All acceptance criteria have corresponding implementation
 - [ ] Integration points wired (check CLAUDE.md section "Project Structure")
+- [ ] **Discovery done** — I read `docs/DECISIONS.md` and used existing names, types, patterns
+- [ ] **Naming consistency** — names match the shared registry
+- [ ] **Frontend↔Backend contract** — if frontend calls an endpoint, it exists and accepts the exact format
+- [ ] **Registry updated** — all new endpoints, types, conventions recorded in `docs/DECISIONS.md`
 - [ ] `make build` passes
 - [ ] `make test` passes
+
+## Handover (after coding, before PR)
+
+Record what you created for the next phase. Update `docs/DECISIONS.md` — add rows to the appropriate category:
+
+| If you created... | Add row to section | Format |
+|---|---|---|
+| API endpoint | **Endpoints** | `METHOD /path → auth \| request → response \| note` |
+| Constant/convention | **Naming conventions** | `area \| canonical \| aliases \| where defined` |
+| Route registration | **Auth boundary** | Add to before/after list |
+| Shared type | **Shared types** | `Type \| definition \| where \| consumers` |
+| Reusable pattern | **Design patterns** | `pattern \| description \| impact` |
+| Bug lesson | **Known pitfalls** | `#N \| what happened \| prevention` |
+
+**You MUST record if you:**
+- Created or changed an API endpoint
+- Defined constants, enums, or naming conventions
+- Changed auth/middleware boundary
+- Created a pattern others should follow
+- Discovered a constraint the plan doesn't mention
 
 ## Create PR
 
@@ -67,6 +91,9 @@ gh pr create --base <base-branch> --title "Phase N: <name>" --body "$(cat <<'PRE
 
 ## Tests
 make test - N tests pass
+
+## DECISIONS.md changes
+<what you added to the shared registry>
 
 ## Files Changed
 <list>
@@ -91,8 +118,10 @@ When spawned to fix rejected work:
 1. First action: `python3 ~/.claude/skills/swarm/scripts/swarm.py update <plan-file> --phase <N> --status FIXING`
 2. Read each GitHub issue for the detailed finding
 3. Read CLAUDE.md for project standards
-4. Fix ALL issues — do not leave any unresolved
-5. Run `make build` and `make test`
-6. For each fix, commit with message referencing the issue: `fix: <description> (closes #<issue-number>)`
-7. Push and create PR: `git push -u origin HEAD && gh pr create --base <base-branch> --title "Phase N: <name> (fix attempt M/3)" --body "Fixes #<issue-number>"`
-8. Hand-over: `python3 ~/.claude/skills/swarm/scripts/swarm.py update <plan-file> --phase <N> --status FOR_REVIEW --pr "<#N>"`
+4. Read `docs/DECISIONS.md` — the fix may involve cross-phase consistency issues
+5. Fix ALL issues — do not leave any unresolved
+6. Run `make build` and `make test`
+7. Update `docs/DECISIONS.md` if the fix changes any shared interface
+8. For each fix, commit with message referencing the issue: `fix: <description> (closes #<issue-number>)`
+9. Push and create PR: `git push -u origin HEAD && gh pr create --base <base-branch> --title "Phase N: <name> (fix attempt M/3)" --body "Fixes #<issue-number>"`
+10. Hand-over: `python3 ~/.claude/skills/swarm/scripts/swarm.py update <plan-file> --phase <N> --status FOR_REVIEW --pr "<#N>"`
