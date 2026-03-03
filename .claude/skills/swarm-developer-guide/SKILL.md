@@ -43,6 +43,55 @@ The Tech Lead will rigorously verify your work. DO NOT leave unfinished code:
 5. For each acceptance criterion, identify WHERE in your code it's satisfied
 6. Commit with clear messages referencing the phase
 
+## Testing
+
+Testing is continuous, not a final step.
+
+### The cycle
+
+```
+define interface/type → write failing test → implement → test passes → next piece
+```
+
+Don't implement everything first and test at the end. Each unit of work (endpoint, component, function) gets its test immediately.
+
+### What to test per artifact type
+
+**New endpoint** — at minimum 3 tests:
+```
+happy path:     POST /path with valid body → 200 + expected response
+invalid input:  POST /path without required field → 400
+auth boundary:  POST /path without auth token → expected status (200 for public, 401 for protected)
+```
+
+**New UI component** — at minimum:
+```
+renders:      component renders with expected content
+interaction:  user action triggers expected callback
+edge case:    empty data, error state, loading state
+```
+
+**Naming/format consistency** — assert exact values, not just truthy:
+```
+BAD:  expect(section).toBeTruthy()
+GOOD: expect(section).toBe('profil')   // exact canonical name
+```
+
+### Test helpers
+
+Before writing test setup from scratch, check `tests/utils/` for existing helpers. Common patterns:
+- Shared app setup that mirrors the real server middleware chain
+- Mock services with the same interface as real ones
+- Factory functions for test data
+
+### Build + test gate
+
+Before PR:
+```bash
+make build   # type check / compilation — fix errors, don't suppress them
+make test    # all tests — fix failures, don't delete tests
+```
+
 ## Self-Review Checklist
 
 Before creating the PR, verify:
