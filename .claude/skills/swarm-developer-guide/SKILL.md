@@ -18,12 +18,37 @@ python3 ~/.claude/skills/swarm/scripts/swarm.py update <plan-file> --phase <N> -
 
 1. Read the plan file, find your phase between `<!-- PHASE:N -->` and `<!-- /PHASE:N -->` markers
 2. Read CLAUDE.md for project standards
-3. Implement EVERYTHING in Scope
-4. Build: `make build`
-5. Test: `make test`
-6. Self-review (see checklist below)
-7. Create PR
-8. Report status
+3. Read `docs/DECISIONS.md` — shared registry of decisions from previous phases (see Discovery below)
+4. **Discover existing code** — before creating anything, check what already exists (see Discovery below)
+5. Implement EVERYTHING in Scope
+6. Build: `make build`
+7. Test: `make test`
+8. Self-review (see checklist below)
+9. Create PR
+10. Report status
+
+## Discovery (before coding)
+
+Before writing code, understand what exists. Skipping this is the #1 cause of cross-phase bugs.
+
+**`docs/DECISIONS.md` is your first stop.** It's a categorized registry (not a chronological log) with sections:
+- **Endpoints** — path, method, auth requirement, request/response format
+- **Naming conventions** — canonical names, aliases, where defined
+- **Auth boundary** — what's before/after middleware
+- **Shared types** — who produces, who consumes
+- **Design patterns** — established patterns (resume, reconnect, etc.)
+- **Known pitfalls** — lessons from previous bugs
+
+**Then verify against actual code:**
+- Grep for endpoint paths you plan to call or create
+- Check shared type definitions (Zod schemas, TypeScript interfaces)
+- Check `tests/utils/` for existing test helpers before writing setup from scratch
+
+**Interface-first rule:** If your phase creates a frontend that calls a backend endpoint (or vice versa):
+1. Check the registry — does the endpoint already exist?
+2. If not: define the interface (type/schema) FIRST
+3. Record the endpoint in `docs/DECISIONS.md` BEFORE implementing
+4. Then implement both sides against this interface
 
 ## Quality Rules
 
